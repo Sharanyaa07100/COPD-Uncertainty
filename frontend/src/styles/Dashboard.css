@@ -25,12 +25,6 @@
 @media(max-width:850px) { .metric-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
 @media(max-width:520px) { .metric-grid,.metric-grid-two { grid-template-columns:1fr; } .metric-card { padding:16px; } .data-table th,.data-table td { padding:11px 12px; } }
 
-.conformal-rate-card {
-  padding: 22px;
-  border: 1px solid #dce7e1;
-  border-radius: 14px;
-  background: #f3f8f5;
-}
 
 .uncertain-rate-card {
   border-color: #d6b98a;

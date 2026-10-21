@@ -8,52 +8,52 @@
   "test": {
     "n": 1190,
     "cases": 87,
-    "roc_auc": 0.784,
-    "roc_auc_ci_low": 0.737,
-    "roc_auc_ci_high": 0.825,
-    "pr_auc": 0.232,
+    "roc_auc": 0.798,
+    "roc_auc_ci_low": 0.751,
+    "roc_auc_ci_high": 0.838,
+    "pr_auc": 0.267,
     "chance_pr_auc": 0.073
   },
   "calibration": [
     {
-      "predicted": 0.005,
+      "predicted": 0.004,
       "observed": 0.0
     },
     {
-      "predicted": 0.009,
+      "predicted": 0.008,
       "observed": 0.017
     },
     {
-      "predicted": 0.016,
-      "observed": 0.008
+      "predicted": 0.014,
+      "observed": 0.017
     },
     {
-      "predicted": 0.022,
+      "predicted": 0.02,
       "observed": 0.025
     },
     {
-      "predicted": 0.03,
-      "observed": 0.05
+      "predicted": 0.028,
+      "observed": 0.034
     },
     {
-      "predicted": 0.04,
-      "observed": 0.008
+      "predicted": 0.039,
+      "observed": 0.025
     },
     {
-      "predicted": 0.065,
-      "observed": 0.126
+      "predicted": 0.061,
+      "observed": 0.084
     },
     {
-      "predicted": 0.1,
-      "observed": 0.143
+      "predicted": 0.095,
+      "observed": 0.118
     },
     {
-      "predicted": 0.141,
-      "observed": 0.134
+      "predicted": 0.136,
+      "observed": 0.151
     },
     {
-      "predicted": 0.281,
-      "observed": 0.218
+      "predicted": 0.288,
+      "observed": 0.261
     }
   ],
   "subgroups": [
@@ -62,16 +62,16 @@
       "group": "Male",
       "n": 554,
       "cases": 39,
-      "roc_auc": 0.792,
-      "pr_auc": 0.241
+      "roc_auc": 0.797,
+      "pr_auc": 0.226
     },
     {
       "group_type": "Sex",
       "group": "Female",
       "n": 636,
       "cases": 48,
-      "roc_auc": 0.777,
-      "pr_auc": 0.245
+      "roc_auc": 0.796,
+      "pr_auc": 0.329
     },
     {
       "group_type": "Race / ethnicity",
@@ -94,8 +94,8 @@
       "group": "Non-Hispanic White",
       "n": 723,
       "cases": 62,
-      "roc_auc": 0.763,
-      "pr_auc": 0.253
+      "roc_auc": 0.777,
+      "pr_auc": 0.283
     },
     {
       "group_type": "Race / ethnicity",
@@ -110,26 +110,27 @@
       "group": "Other / multiracial",
       "n": 139,
       "cases": 10,
-      "roc_auc": 0.864,
-      "pr_auc": 0.389
+      "roc_auc": 0.875,
+      "pr_auc": 0.407
     }
   ],
   "coefficients": {
-    "RIDAGEYR": 0.76,
-    "SMQ020_ever": 0.83,
-    "MCQ010_asthma": 0.542,
-    "BMXBMI": 0.245
+    "RIDAGEYR": 0.885,
+    "SMQ020_ever": 0.666,
+    "MCQ010_asthma": 0.545,
+    "BMXBMI": 0.278,
+    "current_smoker": 0.321
   },
   "conformal": {
     "alpha": 0.1,
     "target_coverage_percent": 90.0,
-    "test_coverage_percent": 90.8,
+    "test_coverage_percent": 90.3,
     "set_sizes": {
       "both": 0,
-      "one": 1151,
-      "empty": 39
+      "one": 1145,
+      "empty": 45
     },
-    "qhat": 0.3248,
+    "qhat": 0.3008,
     "calibration_n": 1189
   }
 }

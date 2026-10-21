@@ -12,7 +12,13 @@ from sklearn.calibration import calibration_curve
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
-FEATURES = ['RIDAGEYR', 'SMQ020_ever', 'MCQ010_asthma', 'BMXBMI']
+FEATURES = [
+    'RIDAGEYR',
+    'SMQ020_ever',
+    'MCQ010_asthma',
+    'BMXBMI',
+    'current_smoker'
+]
 AUDIT = ['RIAGENDR', 'RIDRETH1']
 SEX = {1: 'Male', 2: 'Female'}
 RACE = {1: 'Mexican American', 2: 'Other Hispanic', 3: 'Non-Hispanic White',
@@ -28,6 +34,28 @@ df['COPD'] = (df['MCQ160P'] == 1).astype(int)
 # 2. Recode: refused / don't know -> missing; Yes -> 1, No -> 0
 df['SMQ020_ever'] = df['SMQ020'].replace({7: np.nan, 9: np.nan}).map({1: 1, 2: 0})
 df['MCQ010_asthma'] = df['MCQ010'].replace({9: np.nan}).map({1: 1, 2: 0})
+
+# Current smoking status:
+# 1 = current smoker (daily or some days)
+# 0 = not a current smoker
+# Unknown or missing status remains NaN
+
+df['current_smoker'] = np.nan
+
+never_smoked = df['SMQ020'] == 2
+ever_smoked = df['SMQ020'] == 1
+
+df.loc[never_smoked, 'current_smoker'] = 0
+
+df.loc[
+    ever_smoked & df['SMQ040'].isin([1, 2]),
+    'current_smoker'
+] = 1
+
+df.loc[
+    ever_smoked & (df['SMQ040'] == 3),
+    'current_smoker'
+] = 0
 
 d = df.dropna(subset=FEATURES + AUDIT + ['COPD']).reset_index(drop=True)
 X, y = d[FEATURES], d['COPD']
