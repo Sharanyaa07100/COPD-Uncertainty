@@ -1,0 +1,12 @@
+{
+  "alpha": 0.1,
+  "target_coverage_percent": 90.0,
+  "test_coverage_percent": 90.8,
+  "set_sizes": {
+    "both": 0,
+    "one": 1151,
+    "empty": 39
+  },
+  "qhat": 0.3248,
+  "calibration_n": 1189
+}

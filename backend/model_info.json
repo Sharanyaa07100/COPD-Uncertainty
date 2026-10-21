@@ -1,0 +1,135 @@
+{
+  "sample": {
+    "adults_20plus": 7793,
+    "complete_cases": 5946,
+    "copd_cases": 435,
+    "copd_percent": 7.3
+  },
+  "test": {
+    "n": 1190,
+    "cases": 87,
+    "roc_auc": 0.784,
+    "roc_auc_ci_low": 0.737,
+    "roc_auc_ci_high": 0.825,
+    "pr_auc": 0.232,
+    "chance_pr_auc": 0.073
+  },
+  "calibration": [
+    {
+      "predicted": 0.005,
+      "observed": 0.0
+    },
+    {
+      "predicted": 0.009,
+      "observed": 0.017
+    },
+    {
+      "predicted": 0.016,
+      "observed": 0.008
+    },
+    {
+      "predicted": 0.022,
+      "observed": 0.025
+    },
+    {
+      "predicted": 0.03,
+      "observed": 0.05
+    },
+    {
+      "predicted": 0.04,
+      "observed": 0.008
+    },
+    {
+      "predicted": 0.065,
+      "observed": 0.126
+    },
+    {
+      "predicted": 0.1,
+      "observed": 0.143
+    },
+    {
+      "predicted": 0.141,
+      "observed": 0.134
+    },
+    {
+      "predicted": 0.281,
+      "observed": 0.218
+    }
+  ],
+  "subgroups": [
+    {
+      "group_type": "Sex",
+      "group": "Male",
+      "n": 554,
+      "cases": 39,
+      "roc_auc": 0.792,
+      "pr_auc": 0.241
+    },
+    {
+      "group_type": "Sex",
+      "group": "Female",
+      "n": 636,
+      "cases": 48,
+      "roc_auc": 0.777,
+      "pr_auc": 0.245
+    },
+    {
+      "group_type": "Race / ethnicity",
+      "group": "Mexican American",
+      "n": 68,
+      "cases": 2,
+      "roc_auc": null,
+      "pr_auc": null
+    },
+    {
+      "group_type": "Race / ethnicity",
+      "group": "Other Hispanic",
+      "n": 130,
+      "cases": 4,
+      "roc_auc": null,
+      "pr_auc": null
+    },
+    {
+      "group_type": "Race / ethnicity",
+      "group": "Non-Hispanic White",
+      "n": 723,
+      "cases": 62,
+      "roc_auc": 0.763,
+      "pr_auc": 0.253
+    },
+    {
+      "group_type": "Race / ethnicity",
+      "group": "Non-Hispanic Black",
+      "n": 130,
+      "cases": 9,
+      "roc_auc": null,
+      "pr_auc": null
+    },
+    {
+      "group_type": "Race / ethnicity",
+      "group": "Other / multiracial",
+      "n": 139,
+      "cases": 10,
+      "roc_auc": 0.864,
+      "pr_auc": 0.389
+    }
+  ],
+  "coefficients": {
+    "RIDAGEYR": 0.76,
+    "SMQ020_ever": 0.83,
+    "MCQ010_asthma": 0.542,
+    "BMXBMI": 0.245
+  },
+  "conformal": {
+    "alpha": 0.1,
+    "target_coverage_percent": 90.0,
+    "test_coverage_percent": 90.8,
+    "set_sizes": {
+      "both": 0,
+      "one": 1151,
+      "empty": 39
+    },
+    "qhat": 0.3248,
+    "calibration_n": 1189
+  }
+}

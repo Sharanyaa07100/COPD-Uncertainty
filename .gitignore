@@ -1,0 +1,37 @@
+﻿# Python environments and caches
+.venv/
+.venv-1/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+
+# Local secrets and environment files
+.env
+.env.*
+!.env.example
+
+# Frontend dependencies and generated builds
+frontend/node_modules/
+frontend/dist/
+frontend/coverage/
+
+# Local datasets and generated model artifacts
+backend/*.xpt
+backend/*.csv
+backend/*.pkl
+backend/*.pickle
+backend/*.npy
+backend/*.joblib
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Required deployment model
+!backend/final_model.pkl

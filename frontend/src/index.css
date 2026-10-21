@@ -1,0 +1,4 @@
+:root { color-scheme: light; }
+html { min-width:320px; background:#f5f7f4; }
+body { margin:0; }
+#root { min-height:100vh; }
