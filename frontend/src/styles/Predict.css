@@ -526,3 +526,55 @@
 .classification-inconclusive .classification-title {
   color: #294d72;
 }
+.referral-panel { margin-bottom: 16px; padding: 20px 24px; border-left: 5px solid #17664f; }
+.referral-panel.refer { border-left-color: #b4572d; }
+.referral-panel h2 { margin: 6px 0 8px; font-size: 20px; }
+.referral-panel p { margin: 0; font-size: 13px; line-height: 1.6; color: #40554c; }
+.field-error { color: #8f302c; font-size: 11px; }
+
+.probability-number {
+  font-size: 56px;
+  font-weight: 700;
+  color: #17664f;
+  line-height: 1;
+  letter-spacing: -1px;
+}
+.probability-number span {
+  font-size: 26px;
+  margin-left: 2px;
+}
+.probability-row {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  margin: 20px 0;
+}
+.probability-context {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-left: 24px;
+  border-left: 1px solid #e3eae5;
+}
+.probability-context span { font-size: 12px; color: #718078; }
+.probability-context strong { font-size: 22px; color: #1f3e33; }
+.probability-context small { font-size: 11px; color: #87938d; max-width: 240px; }
+
+.referral-panel {
+  margin-bottom: 16px;
+  padding: 22px 26px;
+  border-left: 5px solid #17664f;
+}
+.referral-panel.refer { border-left-color: #b4572d; }
+.referral-panel h2 { margin: 6px 0 10px; font-size: 20px; color: #16332d; }
+.summary-line { font-size: 14px; line-height: 1.6; color: #40554c; margin: 0; }
+
+.caution-box {
+  background: #fff7e6;
+  border-left: 4px solid #c98a1b;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #6b4a0f;
+  margin-top: 12px;
+}

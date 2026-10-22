@@ -178,3 +178,85 @@ for truth, s in zip(yt, sets):
 for k, v in groups.items():
     if v:
         print(f"{k:16s} n={len(v):4d}  observed COPD={sum(v):3d} ({np.mean(v)*100:.1f}%)")
+
+        # ---- Screening threshold analysis ----
+def rule_out_threshold(p, y, target_sens):
+    """Highest cutoff t such that at least target_sens of true cases are referred (p >= t)."""
+    best = None
+    for t in np.unique(p):
+        if (p[y == 1] >= t).mean() >= target_sens:
+            best = t
+    return best
+
+def screen_report(p, y, t, label):
+    referred = p >= t
+    tp = int((referred & (y == 1)).sum()); fn = int((~referred & (y == 1)).sum())
+    tn = int((~referred & (y == 0)).sum()); fp = int((referred & (y == 0)).sum())
+    print(f"{label}")
+    print(f"  cutoff {t:.3f}  referred {referred.mean()*100:.1f}%  "
+          f"sensitivity {tp/(tp+fn)*100:.1f}%  specificity {tn/(tn+fp)*100:.1f}%  "
+          f"NPV {tn/(tn+fn)*100:.1f}%  PPV {(tp/(tp+fp)*100 if tp+fp else float('nan')):.1f}%  "
+          f"cases ruled out {fn}")
+
+print(f"Baseline 'No COPD for everyone': NPV {(1 - yt.mean())*100:.1f}%, cases ruled out {int(yt.sum())}")
+for target in [0.90, 0.95]:
+    t = rule_out_threshold(p_cal, y_cal.values, target)
+    screen_report(p_te_cp, yt, t, f"Rule-out threshold for {int(target*100)}% sensitivity (test set)")
+
+    # ---- Bootstrap CIs for rule-out performance (test set) ----
+rng = np.random.default_rng(42)
+
+def boot_rule_out(t, n_boot=2000):
+    sens, npv = [], []
+    idx = np.arange(len(yt))
+    for _ in range(n_boot):
+        i = rng.choice(idx, len(idx), replace=True)
+        y_b, p_b = yt[i], p_te_cp[i]
+        if y_b.sum() == 0:
+            continue
+        ref = p_b >= t
+        tp = int((ref & (y_b == 1)).sum()); fn = int((~ref & (y_b == 1)).sum())
+        tn = int((~ref & (y_b == 0)).sum())
+        sens.append(tp / (tp + fn))
+        if tn + fn > 0:
+            npv.append(tn / (tn + fn))
+    return np.percentile(sens, [2.5, 97.5]), np.percentile(npv, [2.5, 97.5])
+
+for target in [0.90, 0.95]:
+    t = rule_out_threshold(p_cal, y_cal.values, target)
+    s_ci, n_ci = boot_rule_out(t)
+    print(f"{int(target*100)}% target: cutoff {t:.3f}  "
+          f"sensitivity 95% CI {s_ci[0]*100:.1f}-{s_ci[1]*100:.1f}%  "
+          f"NPV 95% CI {n_ci[0]*100:.1f}-{n_ci[1]*100:.1f}%")
+
+          # ---- Save the referral cutoff (95% sensitivity, chosen on calibration split) ----
+REFER_TARGET = 0.95
+refer_cutoff = float(rule_out_threshold(p_cal, y_cal.values, REFER_TARGET))
+s_ci, n_ci = boot_rule_out(refer_cutoff)
+ref = p_te_cp >= refer_cutoff
+tp = int((ref & (yt == 1)).sum()); fn = int((~ref & (yt == 1)).sum())
+tn = int((~ref & (yt == 0)).sum())
+screening = {
+    "target_sensitivity_percent": 95.0,
+    "refer_cutoff": round(refer_cutoff, 4),
+    "test_sensitivity_percent": round(tp / (tp + fn) * 100, 1),
+    "test_npv_percent": round(tn / (tn + fn) * 100, 1),
+    "test_referred_percent": round(ref.mean() * 100, 1),
+    "test_cases_missed": fn,
+    "test_cases": int(yt.sum()),
+    "sensitivity_ci_95": [round(s_ci[0] * 100, 1), round(s_ci[1] * 100, 1)],
+    "npv_ci_95": [round(n_ci[0] * 100, 1), round(n_ci[1] * 100, 1)],
+}
+json.dump(screening, open(os.path.join(HERE, 'screening.json'), 'w'), indent=2)
+print("Screening:", json.dumps(screening, indent=2))
+# ---- Bootstrap uncertainty for individual probabilities ----
+B = 200
+rng_b = np.random.default_rng(42)
+boot_models = []
+for _ in range(B):
+    i = rng_b.integers(0, len(X), len(X))
+    m = make_pipeline(StandardScaler(), LogisticRegression(max_iter=1000))
+    m.fit(X.iloc[i], y.iloc[i])
+    boot_models.append(m)
+pickle.dump(boot_models, open(os.path.join(HERE, 'bootstrap_models.pkl'), 'wb'))
+print(f"Saved {B} bootstrap models")

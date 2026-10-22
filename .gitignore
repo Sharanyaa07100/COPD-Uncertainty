@@ -35,3 +35,7 @@ Thumbs.db
 
 # Required deployment model
 !backend/final_model.pkl
+
+# Required runtime artifacts
+!backend/bootstrap_models.pkl
+!backend/screening.json

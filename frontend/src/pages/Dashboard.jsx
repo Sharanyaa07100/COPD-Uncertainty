@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import '../styles/Dashboard.css';
@@ -16,9 +15,12 @@ const pct = (value) =>
     : `${(Number(value) * 100).toFixed(1)}%`;
 
 const count = (value) =>
-  value == null
-    ? '—'
-    : Number(value).toLocaleString();
+  value == null ? '—' : Number(value).toLocaleString();
+
+const ciText = (pair) =>
+  Array.isArray(pair) && pair.length === 2
+    ? `95% CI ${pair[0]}–${pair[1]}%`
+    : '';
 
 export default function Dashboard() {
   const [modelInfo, setModelInfo] = useState(null);
@@ -59,9 +61,7 @@ export default function Dashboard() {
   if (!modelInfo) {
     return (
       <div className="dashboard-page">
-        <p className="loading-state">
-          Loading model performance…
-        </p>
+        <p className="loading-state">Loading model performance…</p>
       </div>
     );
   }
@@ -225,7 +225,7 @@ export default function Dashboard() {
         </div>
       </section>
 
-      {/* 03 — Calibration and chart */}
+      {/* 03 — Calibration */}
       <section className="dashboard-section">
         <div className="section-heading">
           <span className="section-number">03</span>
@@ -380,7 +380,8 @@ export default function Dashboard() {
             <div>
               <h2>Model coefficients</h2>
               <p>
-                Coefficient values returned by the backend.
+                Standardized coefficients returned by the backend.
+                Positive values raise the estimated probability.
               </p>
             </div>
           </div>
@@ -421,9 +422,24 @@ export default function Dashboard() {
               </table>
             </div>
           ) : (
-            <pre className="coefficient-block">
-              {JSON.stringify(coefficients, null, 2)}
-            </pre>
+            <div className="table-wrap">
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>Feature</th>
+                    <th>Standardized coefficient</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Object.entries(coefficients).map(([feature, value]) => (
+                    <tr key={feature}>
+                      <td>{feature}</td>
+                      <td>{fmt(value, 3)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </section>
       )}
@@ -466,13 +482,7 @@ export default function Dashboard() {
           Prediction-set counts
         </h3>
 
-        <div className="metric-grid">
-          <Metric
-            label="Both outcomes"
-            value={count(setSizes.both)}
-            detail="Sets containing both possible labels"
-          />
-
+        <div className="metric-grid metric-grid-two">
           <Metric
             label="Single outcome"
             value={count(setSizes.one)}
@@ -482,13 +492,9 @@ export default function Dashboard() {
           <Metric
             label="Empty sets"
             value={count(setSizes.empty)}
-            detail="Sets containing neither label"
+            detail="Sets containing neither label. The estimate is inconclusive for these patients."
           />
         </div>
-
-        <p className="conformal-highlight">
-          No patient in this sample received a COPD-only prediction set.
-        </p>
 
         <div className="metric-grid metric-grid-two">
           <Metric
@@ -511,11 +517,98 @@ export default function Dashboard() {
         </p>
       </section>
 
+      {/* 07 — Referral rule */}
+      <ScreeningSection />
+
       <p className="dashboard-disclaimer">
         Research prototype only. Model performance on a study
         sample does not establish clinical usefulness or fairness.
       </p>
     </div>
+  );
+}
+
+function ScreeningSection() {
+  const [screening, setScreening] = useState(null);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    let active = true;
+
+    axios
+      .get(`${API_URL}/screening`)
+      .then((response) => {
+        if (active) setScreening(response.data);
+      })
+      .catch(() => {
+        if (active) setError('Referral rule could not be loaded.');
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  if (error) {
+    return (
+      <section className="dashboard-section">
+        <div className="message error-message" role="alert">
+          {error}
+        </div>
+      </section>
+    );
+  }
+
+  if (!screening) return null;
+
+  return (
+    <section className="dashboard-section screening-section">
+      <div className="section-heading">
+        <span className="section-number">07</span>
+        <div>
+          <h2>Referral rule (screening cutoff)</h2>
+          <p>
+            Cutoff chosen on the calibration split to reach{' '}
+            {screening.target_sensitivity_percent}% sensitivity.
+            Results below are from the held-out test set.
+          </p>
+        </div>
+      </div>
+
+      <div className="metric-grid">
+        <Metric
+          label="Referral cutoff"
+          value={fmt(screening.refer_cutoff, 3)}
+          detail="Estimates at or above this value are referred for spirometry"
+        />
+
+        <Metric
+          label="Referred"
+          value={`${screening.test_referred_percent}%`}
+          detail="Share of test patients referred"
+        />
+
+        <Metric
+          label="Sensitivity"
+          value={`${screening.test_sensitivity_percent}%`}
+          detail={ciText(screening.sensitivity_ci_95)}
+        />
+
+        <Metric
+          label="Negative predictive value"
+          value={`${screening.test_npv_percent}%`}
+          detail={ciText(screening.npv_ci_95)}
+        />
+      </div>
+
+      <p className="table-note">
+        {screening.test_cases_missed} of {screening.test_cases} COPD
+        cases in the test set fell below the cutoff. With this
+        few cases, the intervals are wide. The positive predictive
+        value is low, so a referral prompts spirometry and is not
+        a diagnosis.
+      </p>
+    </section>
   );
 }
 
@@ -625,7 +718,7 @@ function CalibrationChart({ data }) {
           strokeDasharray="7 6"
         />
 
-        {/* Actual calibration observations */}
+        {/* Observed calibration groups */}
         {validData.map((row, index) => (
           <circle
             key={`${row.predicted}-${row.observed}-${index}`}

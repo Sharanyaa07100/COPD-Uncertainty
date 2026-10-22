@@ -1,0 +1,17 @@
+{
+  "target_sensitivity_percent": 95.0,
+  "refer_cutoff": 0.018,
+  "test_sensitivity_percent": 95.4,
+  "test_npv_percent": 98.9,
+  "test_referred_percent": 68.2,
+  "test_cases_missed": 4,
+  "test_cases": 87,
+  "sensitivity_ci_95": [
+    90.8,
+    99.1
+  ],
+  "npv_ci_95": [
+    97.8,
+    99.8
+  ]
+}
